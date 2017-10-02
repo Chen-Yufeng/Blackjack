@@ -3,8 +3,11 @@
 #include <time.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 char toString(int);
+void add(int * total, int number);
+void check(int total, int choice,bool * b_out);
 void eatline(void)
 {
 	while (getchar() != '\n')
@@ -18,6 +21,7 @@ int main(void)
 	int random;
 	bool bl = true;
 	bool b_one, b_two;
+	bool b_out = true;
 	b_one = b_two = true;
 	int* p = b;
 
@@ -25,31 +29,46 @@ int main(void)
 		for (int y = 0; y < 13; y++)
 			a[x * 13 + y] = y + 1;
 
-	srand((unsigned int)time(NULL));
-	for (int z = 0; z < 52; z++)
+	srand((unsigned int)(time(NULL)*time(NULL)));  //???rand in for ???
+	for (int z = 0; z < 51; z++)
 	{
-		random = rand() % (52-z) + 1;
+		random = rand() % (52-z);
 		b[z] = a[random];
-		a[random] = a[52 - z];
+		a[random] = a[51 - z];
 	}
+	b[51] = a[0];
+
+	//code for test:
+	//int t[13] = { 0 };
+	//for (int x = 0; x < 52; x++)
+	//	t[b[x]-1]++;
+	//for (int x = 0; x < 13; x++)
+	//	printf("%d ", t[x]);
+
 
 	printf("Welcome to The Blackjack Game(by XZH)!\n");
 	printf("		yours		the other's\n");
-	while (bl)
+
+	int total_a = 0, total_b = 0;
+
+	while (bl&&b_out)
 	{
 		static int round = 1;
 		if (round == 1)
 		{
 		printf("Round %d", round);
-			printf("		  %c		    %c", 
-				toString(*(p++)), toString(*(p++)));
+			printf("		  %c", toString(*p));
+			add(&total_a, *(p++));
+			printf("		    %c", toString(*p));
+			add(&total_b, *(p++));
 		}
 		else
 		{
-			printf("		Want more?(y/n*2): ");
-			if (getchar() == 'n')
+			printf("		Want more?(y/n*2 eg:yy): ");
+			
+			if (tolower(getchar()) == 'n')
 				b_one = false;
-			if (getchar() == 'n')
+			if (tolower(getchar()) == 'n')
 				b_two = false;
 			if (!(b_one || b_two))
 				bl = false;
@@ -59,17 +78,31 @@ int main(void)
 				printf("Round %d", round);
 				if (b_one)
 				{
-					printf("		  %c",toString(*(p++)));
+					printf("		  %c",toString(*p));
+					add(&total_a, *(p++));
+					check(total_a, 1,&b_out);
 				}
 				else
 					printf("		    ");
 				if (b_two)
-					printf("		    %c", toString(*(p++)));
+				{
+					printf("		    %c", toString(*p));
+					add(&total_b, *(p++));
+					check(total_b, 2,&b_out);
+				}
 				else
 					printf("              ");
 			}
 		}
 		round++;
+	}
+	if (b_out)
+	{
+		printf("\nTotal:		  %d		%d", total_a, total_b);
+		if (total_a == total_b)
+			printf("		PUSH!\n");
+		else
+			printf("\nYou %s this game!\n", total_a > total_b ? "win" : "lose");
 	}
 	system("pause");
 	return 0;
@@ -89,4 +122,37 @@ char toString(int i)
 		return 'Q';
 	else if (i == 13)
 		return 'K';
+}
+
+void add(int * total,int number)
+{
+	if (number == 1)
+		*total += 11;
+	else if (number > 10)
+		*total += 10;
+	else
+		*total += number;
+}
+
+void check(int total, int choice,bool * b_out)
+{
+	switch (choice)
+	{
+	case 1:
+		if (total > 21)
+		{
+			printf("You lose this game!");
+			*b_out = false;
+		}
+		break;
+	case 2:
+		if (total > 21)
+		{
+			printf("You win this game!");
+			*b_out = false;
+		}
+		break;
+	default:
+		break;
+	}
 }
