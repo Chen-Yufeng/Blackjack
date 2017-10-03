@@ -5,7 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 
-char toString(int);
+char* toString(int);
 void add(int * total, int number);
 void check(int total, int choice,bool * b_out);
 void eatline(void)
@@ -23,105 +23,125 @@ int main(void)
 	bool b_one, b_two;
 	bool b_out = true;
 	b_one = b_two = true;
+	bool re = true;
 	int* p = b;
+	int total_a, total_b;
+	int round;
 
-	for (int x = 0; x < 4; x++)
-		for (int y = 0; y < 13; y++)
-			a[x * 13 + y] = y + 1;
-
-	srand((unsigned int)(time(NULL)*time(NULL)));  //???rand in for ???
-	for (int z = 0; z < 51; z++)
+	while (re)
 	{
-		random = rand() % (52-z);
-		b[z] = a[random];
-		a[random] = a[51 - z];
-	}
-	b[51] = a[0];
+		for (int x = 0; x < 4; x++)
+			for (int y = 0; y < 13; y++)
+				a[x * 13 + y] = y + 1;
 
-	//code for test:
-	//int t[13] = { 0 };
-	//for (int x = 0; x < 52; x++)
-	//	t[b[x]-1]++;
-	//for (int x = 0; x < 13; x++)
-	//	printf("%d ", t[x]);
-
-
-	printf("Welcome to The Blackjack Game(by XZH)!\n");
-	printf("		yours		the other's\n");
-
-	int total_a = 0, total_b = 0;
-
-	while (bl&&b_out)
-	{
-		static int round = 1;
-		if (round == 1)
+		srand((unsigned int)(time(NULL)*time(NULL)));  //???rand in for ???
+		for (int z = 0; z < 51; z++)
 		{
-		printf("Round %d", round);
-			printf("		  %c", toString(*p));
-			add(&total_a, *(p++));
-			printf("		    %c", toString(*p));
-			add(&total_b, *(p++));
+			random = rand() % (52 - z);
+			b[z] = a[random];
+			a[random] = a[51 - z];
 		}
-		else
+		b[51] = a[0];
+
+		//code for test:
+		//int t[13] = { 0 };
+		//for (int x = 0; x < 52; x++)
+		//	t[b[x]-1]++;
+		//for (int x = 0; x < 13; x++)
+		//	printf("%d ", t[x]);
+
+
+		printf("Welcome to The Blackjack Game(by XZH)!\n");
+		printf("		yours		the other's\n");
+
+		total_a =total_b = 0;
+
+		round = 1;
+		while (bl&&b_out)
 		{
-			printf("		Want more?(y/n*2 eg:yy): ");
-			
-			if (tolower(getchar()) == 'n')
-				b_one = false;
-			if (tolower(getchar()) == 'n')
-				b_two = false;
-			if (!(b_one || b_two))
-				bl = false;
-			eatline();
-			if (bl)
+			if (round == 1)
 			{
 				printf("Round %d", round);
-				if (b_one)
-				{
-					printf("		  %c",toString(*p));
-					add(&total_a, *(p++));
-					check(total_a, 1,&b_out);
-				}
-				else
-					printf("		    ");
-				if (b_two)
-				{
-					printf("		    %c", toString(*p));
-					add(&total_b, *(p++));
-					check(total_b, 2,&b_out);
-				}
-				else
-					printf("              ");
+				printf("		  %s", toString(*p));
+				add(&total_a, *(p++));
+				printf("		    %s", toString(*p));
+				add(&total_b, *(p++));
 			}
+			else
+			{
+				printf("		Want more?(y/n*2 eg:yy): ");
+
+				if (tolower(getchar()) == 'n')
+					b_one = false;
+				if (tolower(getchar()) == 'n')
+					b_two = false;
+				if (!(b_one || b_two))
+					bl = false;
+				eatline();
+				if (bl)
+				{
+					printf("Round %d", round);
+					if (b_one)
+					{
+						printf("		  %s", toString(*p));
+						add(&total_a, *(p++));
+						check(total_a, 1, &b_out);
+						if (!b_out)
+						{
+							b_two = false;
+							putchar('\n');
+						}
+					}
+					else
+						printf("		    ");
+					if (b_two)
+					{
+						printf("		    %s", toString(*p));
+						add(&total_b, *(p++));
+						check(total_b, 2, &b_out);
+					}
+					else
+						printf("              ");
+				}
+			}
+			round++;
 		}
-		round++;
-	}
-	if (b_out)
-	{
-		printf("\nTotal:		  %d		%d", total_a, total_b);
-		if (total_a == total_b)
-			printf("		PUSH!\n");
-		else
-			printf("\nYou %s this game!\n", total_a > total_b ? "win" : "lose");
+		if (b_out)
+		{
+			printf("\nTotal:		  %d		%d", total_a, total_b);
+			if (total_a == total_b)
+				printf("		PUSH!\n");
+			else
+				printf("\nYou %s this game!\n", total_a > total_b ? "win" : "lose");
+		}
+		printf("Want another game?(y/n)");
+		if (getchar() == 'y'){
+			bl = b_one = b_out = b_two = true;
+		} else {
+			re = false;
+		}
+			eatline();
 	}
 	system("pause");
 	return 0;
 }
 
-char toString(int i)
+char* toString(int i)
 {
 	if (i == 1)
-		return 'A';
+		return "A";
 	else if (i <= 10)
 	{
-		return ('1' + i - 1);
+		static char s[3];
+		_itoa(i, s, 10);
+		return s;
 	}
 	else if (i == 11)
-		return 'J';
+		return "J";
 	else if (i == 12)
-		return 'Q';
+		return "Q";
 	else if (i == 13)
-		return 'K';
+		return "K";
 }
 
 void add(int * total,int number)
@@ -141,14 +161,14 @@ void check(int total, int choice,bool * b_out)
 	case 1:
 		if (total > 21)
 		{
-			printf("You lose this game!");
+			printf("\nYou lose this game!\n");
 			*b_out = false;
 		}
 		break;
 	case 2:
 		if (total > 21)
 		{
-			printf("You win this game!");
+			printf("\nYou win this game!\n");
 			*b_out = false;
 		}
 		break;
