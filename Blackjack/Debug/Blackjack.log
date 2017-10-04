@@ -1,4 +1,4 @@
 ﻿  Main.c
-d:\i\c\练习\项目\blackjack\blackjack\main.c(145): warning C4715: “toString”: 不是所有的控件路径都返回值
+d:\i\c\练习\项目\blackjack\blackjack\main.c(158): warning C4715: “toString”: 不是所有的控件路径都返回值
   Blackjack.vcxproj -> D:\I\C\练习\项目\Blackjack\Debug\Blackjack.exe
   Blackjack.vcxproj -> D:\I\C\练习\项目\Blackjack\Debug\Blackjack.pdb (Partial PDB)

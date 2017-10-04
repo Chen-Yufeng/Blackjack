@@ -2,17 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-#include <string.h>
-#include <ctype.h>
+//#include <string.h>
+//#include <ctype.h>
+#include <Windows.h>
 
 char* toString(int);
 void add(int * total, int number);
-void check(int total, int choice,bool * b_out);
-void eatline(void)
-{
-	while (getchar() != '\n')
-		continue;
-}
+void check(int total,bool * b_out);
+
+//void eatline(void)
+//{
+//	while (getchar() != '\n')
+//		continue;
+//}
 
 int main(void)
 {
@@ -69,58 +71,69 @@ int main(void)
 			}
 			else
 			{
-				printf("		Want more?(y/n*2 eg:yy): ");
-
-				if (tolower(getchar()) == 'n')
-					b_one = false;
-				if (tolower(getchar()) == 'n')
-					b_two = false;
-				if (!(b_one || b_two))
-					bl = false;
-				eatline();
+			
 				if (bl)
 				{
-					printf("Round %d", round);
+					printf("\nRound %d", round);
+
+					if(b_one)
+						if ((_Bool)(MessageBox(NULL, "Do you want the next one?", "Choose", MB_YESNO) == IDNO))
+							b_one = false;
+
 					if (b_one)
 					{
 						printf("		  %s", toString(*p));
 						add(&total_a, *(p++));
-						check(total_a, 1, &b_out);
+						check(total_a, &b_out);
 						if (!b_out)
 						{
 							b_two = false;
-							putchar('\n');
+							printf("\nTotal:		  %d		    %d", total_a, total_b);
+							printf("\nYou lost this game!\n");
 						}
 					}
 					else
 						printf("		    ");
+
+					if(b_two)
+						if ((_Bool)(MessageBox(NULL, "Do you want your opponent to have next one?", "Choose", MB_YESNO) == IDNO))
+							b_two = false;
+
 					if (b_two)
 					{
 						printf("		    %s", toString(*p));
 						add(&total_b, *(p++));
-						check(total_b, 2, &b_out);
+						check(total_b, &b_out);
+						if (!b_out)
+						{
+							printf("\nTotal:		  %d		    %d", total_a, total_b);
+							printf("\nYou win this game!\n");
+						}
 					}
 					else
 						printf("              ");
 				}
 			}
 			round++;
+
+			if (!(b_one || b_two))
+				bl = false;
+
 		}
 		if (b_out)
 		{
-			printf("\nTotal:		  %d		%d", total_a, total_b);
+			printf("\nTotal:		  %d		    %d", total_a, total_b);
 			if (total_a == total_b)
 				printf("		PUSH!\n");
 			else
 				printf("\nYou %s this game!\n", total_a > total_b ? "win" : "lose");
 		}
-		printf("Want another game?(y/n)");
-		if (getchar() == 'y'){
+
+		if ((_Bool)(MessageBox(NULL, "Expect another game ?", "Choose", MB_YESNO) == IDYES)){
 			bl = b_one = b_out = b_two = true;
 		} else {
 			re = false;
 		}
-			eatline();
 	}
 	system("pause");
 	return 0;
@@ -147,32 +160,24 @@ char* toString(int i)
 void add(int * total,int number)
 {
 	if (number == 1)
-		*total += 11;
+		switch ((_Bool)(MessageBox(NULL, "\"A as 11 or not?\"", "Choose", MB_YESNO)==IDYES)) {
+		case 1:
+			*total += 11;
+			break;
+		case 0:
+			*total += 1;
+		}
 	else if (number > 10)
 		*total += 10;
 	else
 		*total += number;
 }
 
-void check(int total, int choice,bool * b_out)
+void check(int total,bool * b_out)
 {
-	switch (choice)
+	if (total > 21)
 	{
-	case 1:
-		if (total > 21)
-		{
-			printf("\nYou lose this game!\n");
-			*b_out = false;
-		}
-		break;
-	case 2:
-		if (total > 21)
-		{
-			printf("\nYou win this game!\n");
-			*b_out = false;
-		}
-		break;
-	default:
-		break;
+		*b_out = false;
 	}
+
 }
