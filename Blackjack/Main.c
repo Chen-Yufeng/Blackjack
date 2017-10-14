@@ -18,14 +18,14 @@ void check(int total,bool * b_out);
 
 int main(void)
 {
-	int a[52];
-	int b[52];
-	int random;
-	bool bl = true;
-	bool b_one, b_two;
-	bool b_out = true;
+	int a[52];  //初始化
+	int b[52];  //洗牌
+	int random;  //随机数存储
+	bool bl = true;  //
+	bool b_one, b_two;  //我和庄家要牌？？
+	bool b_out = true;  //爆牌处理
 	b_one = b_two = true;
-	bool re = true;
+	bool re = true;  //重复游戏
 	int* p = b;
 	int total_a, total_b;
 	int round;
@@ -117,10 +117,10 @@ int main(void)
 			round++;
 
 			if (!(b_one || b_two))
-				bl = false;
+				bl = false;  //都不要牌以后
 
 		}
-		if (b_out)
+		if (b_out)  //非爆牌以后判定输赢
 		{
 			printf("\nTotal:		  %d		    %d", total_a, total_b);
 			if (total_a == total_b)
@@ -139,7 +139,7 @@ int main(void)
 	return 0;
 }
 
-char* toString(int i)
+char* toString(int i)  //int转char*
 {
 	if (i == 1)
 		return "A";
@@ -173,7 +173,7 @@ void add(int * total,int number)
 		*total += number;
 }
 
-void check(int total,bool * b_out)
+void check(int total,bool * b_out) //检查爆牌
 {
 	if (total > 21)
 	{
